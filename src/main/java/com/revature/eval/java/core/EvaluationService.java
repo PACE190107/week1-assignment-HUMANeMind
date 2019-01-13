@@ -1,14 +1,30 @@
 package com.revature.eval.java.core;
 
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 
+import org.omg.CORBA.DoubleHolder;
+
 public class EvaluationService {
+	private final static int indexA = 64;
+	private final static int indexZ = 90;
+	private final static int aIndex = 96;
+	private final static int zIndex = 122;
 
 	/**
 	 * 1. Without using the StringBuilder or StringBuffer class, write a method that
@@ -490,10 +506,6 @@ public class EvaluationService {
 	 */
 	static class RotationalCipher {
 		private int key;
-		private final int indexA = 64;
-		private final int indexZ = 90;
-		private final int aIndex = 96;
-		private final int zIndex = 122;
 		private int currentIndex;
 		private String rotated = "";
 		private char currentChar;
@@ -550,24 +562,24 @@ public class EvaluationService {
 		int i2;
 
 		for (int primeCounter = 1; primeCounter <= i; primeCounter++) {
-			for(i2 = 2; i2 <= counter; i2++) {
+			for (i2 = 2; i2 <= counter; i2++) {
 				nthPrime = i2;
 				remainder = (counter % i2);
 				if (remainder == 0) {
-					if (counter == i2) {						
+					if (counter == i2) {
 						counter++;
 						break;
 					}
 					counter++;
 					i2 = 2;
-				}								
-			}			
-		}	
-		
+				}
+			}
+		}
+
 		if (nthPrime == 0) {
 			throw new IllegalArgumentException();
 		}
-		
+
 		return nthPrime;
 	}
 
@@ -596,7 +608,6 @@ public class EvaluationService {
 	 *
 	 */
 	static class AtbashCipher {
-
 		/**
 		 * Question 13
 		 * 
@@ -604,8 +615,16 @@ public class EvaluationService {
 		 * @return
 		 */
 		public static String encode(String string) {
-			// TODO Write an implementation for this method declaration
-			return null;
+			String encoded = atbash(string);
+			String[] toEncoded = encoded.split("(?<=\\G.....)");
+			encoded = "";
+
+			for (String s : toEncoded) {
+				encoded += s + " ";
+			}
+			encoded = encoded.trim();
+
+			return encoded;
 		}
 
 		/**
@@ -615,158 +634,299 @@ public class EvaluationService {
 		 * @return
 		 */
 		public static String decode(String string) {
-			// TODO Write an implementation for this method declaration
-			return null;
+			return atbash(string);
+		}
+
+		public static String atbash(String string) {
+			int currentIndex;
+			String endcoded = "";
+			char currentChar;
+			string = string.replaceAll("[^A-Za-z0-9]", "");
+
+			for (int i = 0; i < string.length(); i++) {
+				currentChar = string.charAt(i);
+
+				if (Character.isLetter(currentChar)) {
+					currentIndex = currentChar;
+
+					if (Character.isUpperCase(currentChar)) {
+						currentIndex = (indexZ - currentIndex) + aIndex + 1;
+					} else {
+						currentIndex = (zIndex - currentIndex) + aIndex + 1;
+					}
+
+					currentChar = (char) currentIndex;
+				}
+				endcoded += currentChar;
+			}
+
+			return endcoded;
 		}
 	}
 
-//	/**
-//	 * 15. The ISBN-10 verification process is used to validate book identification
-//	 * numbers. These normally contain dashes and look like: 3-598-21508-8
-//	 * 
-//	 * ISBN The ISBN-10 format is 9 digits (0 to 9) plus one check character (either
-//	 * a digit or an X only). In the case the check character is an X, this
-//	 * represents the value '10'. These may be communicated with or without hyphens,
-//	 * and can be checked for their validity by the following formula:
-//	 * 
-//	 * (x1 * 10 + x2 * 9 + x3 * 8 + x4 * 7 + x5 * 6 + x6 * 5 + x7 * 4 + x8 * 3 + x9
-//	 * * 2 + x10 * 1) mod 11 == 0 If the result is 0, then it is a valid ISBN-10,
-//	 * otherwise it is invalid.
-//	 * 
-//	 * Example Let's take the ISBN-10 3-598-21508-8. We plug it in to the formula,
-//	 * and get:
-//	 * 
-//	 * (3 * 10 + 5 * 9 + 9 * 8 + 8 * 7 + 2 * 6 + 1 * 5 + 5 * 4 + 0 * 3 + 8 * 2 + 8 *
-//	 * 1) mod 11 == 0 Since the result is 0, this proves that our ISBN is valid.
-//	 * 
-//	 * @param string
-//	 * @return
-//	 */
-//	public boolean isValidIsbn(String string) {
-//		// TODO Write an implementation for this method declaration
-//		return false;
-//	}
-//
-//	/**
-//	 * 16. Determine if a sentence is a pangram. A pangram (Greek: παν γράμμα, pan
-//	 * gramma, "every letter") is a sentence using every letter of the alphabet at
-//	 * least once. The best known English pangram is:
-//	 * 
-//	 * The quick brown fox jumps over the lazy dog.
-//	 * 
-//	 * The alphabet used consists of ASCII letters a to z, inclusive, and is case
-//	 * insensitive. Input will not contain non-ASCII symbols.
-//	 * 
-//	 * @param string
-//	 * @return
-//	 */
-//	public boolean isPangram(String string) {
-//		// TODO Write an implementation for this method declaration
-//		return false;
-//	}
-//
-//	/**
-//	 * 17. Calculate the moment when someone has lived for 10^9 seconds.
-//	 * 
-//	 * A gigasecond is 109 (1,000,000,000) seconds.
-//	 * 
-//	 * @param given
-//	 * @return
-//	 */
-//	public Temporal getGigasecondDate(Temporal given) {
-//		// TODO Write an implementation for this method declaration
-//		return null;
-//	}
-//
-//	/**
-//	 * 18. Given a number, find the sum of all the unique multiples of particular
-//	 * numbers up to but not including that number.
-//	 * 
-//	 * If we list all the natural numbers below 20 that are multiples of 3 or 5, we
-//	 * get 3, 5, 6, 9, 10, 12, 15, and 18.
-//	 * 
-//	 * The sum of these multiples is 78.
-//	 * 
-//	 * @param i
-//	 * @param set
-//	 * @return
-//	 */
-//	public int getSumOfMultiples(int i, int[] set) {
-//		// TODO Write an implementation for this method declaration
-//		return 0;
-//	}
-//
-//	/**
-//	 * 19. Given a number determine whether or not it is valid per the Luhn formula.
-//	 * 
-//	 * The Luhn algorithm is a simple checksum formula used to validate a variety of
-//	 * identification numbers, such as credit card numbers and Canadian Social
-//	 * Insurance Numbers.
-//	 * 
-//	 * The task is to check if a given string is valid.
-//	 * 
-//	 * Validating a Number Strings of length 1 or less are not valid. Spaces are
-//	 * allowed in the input, but they should be stripped before checking. All other
-//	 * non-digit characters are disallowed.
-//	 * 
-//	 * Example 1: valid credit card number 1 4539 1488 0343 6467 The first step of
-//	 * the Luhn algorithm is to double every second digit, starting from the right.
-//	 * We will be doubling
-//	 * 
-//	 * 4_3_ 1_8_ 0_4_ 6_6_ If doubling the number results in a number greater than 9
-//	 * then subtract 9 from the product. The results of our doubling:
-//	 * 
-//	 * 8569 2478 0383 3437 Then sum all of the digits:
-//	 * 
-//	 * 8+5+6+9+2+4+7+8+0+3+8+3+3+4+3+7 = 80 If the sum is evenly divisible by 10,
-//	 * then the number is valid. This number is valid!
-//	 * 
-//	 * Example 2: invalid credit card number 1 8273 1232 7352 0569 Double the second
-//	 * digits, starting from the right
-//	 * 
-//	 * 7253 2262 5312 0539 Sum the digits
-//	 * 
-//	 * 7+2+5+3+2+2+6+2+5+3+1+2+0+5+3+9 = 57 57 is not evenly divisible by 10, so
-//	 * this number is not valid.
-//	 * 
-//	 * @param string
-//	 * @return
-//	 */
-//	public boolean isLuhnValid(String string) {
-//		// TODO Write an implementation for this method declaration
-//		return false;
-//	}
-//
-//	/**
-//	 * 20. Parse and evaluate simple math word problems returning the answer as an
-//	 * integer.
-//	 * 
-//	 * Add two numbers together.
-//	 * 
-//	 * What is 5 plus 13?
-//	 * 
-//	 * 18
-//	 * 
-//	 * Now, perform the other three operations.
-//	 * 
-//	 * What is 7 minus 5?
-//	 * 
-//	 * 2
-//	 * 
-//	 * What is 6 multiplied by 4?
-//	 * 
-//	 * 24
-//	 * 
-//	 * What is 25 divided by 5?
-//	 * 
-//	 * 5
-//	 * 
-//	 * @param string
-//	 * @return
-//	 */
-//	public int solveWordProblem(String string) {
-//		// TODO Write an implementation for this method declaration
-//		return 0;
-//	}
+	/**
+	 * 15. The ISBN-10 verification process is used to validate book identification
+	 * numbers. These normally contain dashes and look like: 3-598-21508-8
+	 * 
+	 * ISBN The ISBN-10 format is 9 digits (0 to 9) plus one check character (either
+	 * a digit or an X only). In the case the check character is an X, this
+	 * represents the value '10'. These may be communicated with or without hyphens,
+	 * and can be checked for their validity by the following formula:
+	 * 
+	 * (x1 * 10 + x2 * 9 + x3 * 8 + x4 * 7 + x5 * 6 + x6 * 5 + x7 * 4 + x8 * 3 + x9
+	 * * 2 + x10 * 1) mod 11 == 0 If the result is 0, then it is a valid ISBN-10,
+	 * otherwise it is invalid.
+	 * 
+	 * Example Let's take the ISBN-10 3-598-21508-8. We plug it in to the formula,
+	 * and get:
+	 * 
+	 * (3 * 10 + 5 * 9 + 9 * 8 + 8 * 7 + 2 * 6 + 1 * 5 + 5 * 4 + 0 * 3 + 8 * 2 + 8 *
+	 * 1) mod 11 == 0 Since the result is 0, this proves that our ISBN is valid.
+	 * 
+	 * @param string
+	 * @return
+	 */
+	public boolean isValidIsbn(String string) {
+		string = string.replaceAll("[^X0-9]", "");
+		boolean isValid = false;
+		int total = 0;
+		char currentChar;
+
+		if (string.length() == 10) {
+			for (int i = 10; i > 0; i--) {
+				currentChar = string.charAt(i - 1);
+				if (currentChar == 'X') {
+					total += 10 * i;
+				} else {
+					total += i * Character.getNumericValue(currentChar);
+				}
+			}
+
+			if (total % 11 == 0) {
+				isValid = true;
+			}
+		}
+
+		return isValid;
+	}
+
+	/**
+	 * 16. Determine if a sentence is a pangram. A pangram (Greek: παν γράμμα, pan
+	 * gramma, "every letter") is a sentence using every letter of the alphabet at
+	 * least once. The best known English pangram is:
+	 * 
+	 * The quick brown fox jumps over the lazy dog.
+	 * 
+	 * The alphabet used consists of ASCII letters a to z, inclusive, and is case
+	 * insensitive. Input will not contain non-ASCII symbols.
+	 * 
+	 * @param string
+	 * @return
+	 */
+	public boolean isPangram(String string) {
+		boolean isPangram = true;
+
+		string = string.replaceAll("[^A-Za-z]", "");
+		string = string.toLowerCase();
+
+		for (int i = 26; i > 0; i--) {
+			if (!string.contains(Character.toString((char) (aIndex + i)))) {
+				isPangram = false;
+				break;
+			}
+		}
+
+		return isPangram;
+	}
+
+	/**
+	 * 17. Calculate the moment when someone has lived for 10^9 seconds.
+	 * 
+	 * A gigasecond is 109 (1,000,000,000) seconds.
+	 * 
+	 * @param given
+	 * @return
+	 */
+	public Temporal getGigasecondDate(Temporal given) {
+		long gigasecond = (long) Math.pow(10, 9);
+		Temporal calculated = given;
+		LocalDate dateWithoutTime;
+		LocalDateTime dateWithTime;
+		String temporalClass = given.getClass().toString();
+
+		if (!temporalClass.contains("Time")) {
+			dateWithoutTime = (LocalDate) given;
+			dateWithTime = dateWithoutTime.atStartOfDay();
+			given = dateWithTime;
+		}
+
+		calculated = given.plus(gigasecond, ChronoUnit.SECONDS);
+
+		return calculated;
+	}
+
+	/**
+	 * 18. Given a number, find the sum of all the unique multiples of particular
+	 * numbers up to but not including that number.
+	 * 
+	 * If we list all the natural numbers below 20 that are multiples of 3 or 5, we
+	 * get 3, 5, 6, 9, 10, 12, 15, and 18.
+	 * 
+	 * The sum of these multiples is 78.
+	 * 
+	 * @param i
+	 * @param set
+	 * @return
+	 */
+	public int getSumOfMultiples(int i, int[] set) {
+		int total;
+		Integer currentMultiple;
+		Set<Integer> foundMultiples = new HashSet<Integer>();
+
+		for (int i2 = 1; i2 <= i; i2++) {
+			for (int i3 = 0; i3 < set.length; i3++) {
+				currentMultiple = i2 * set[i3];
+				if (currentMultiple < i) {
+					foundMultiples.add(currentMultiple);
+				}
+			}
+		}
+
+		total = foundMultiples.stream().mapToInt(Integer::intValue).sum();
+		return total;
+	}
+
+	/**
+	 * 19. Given a number determine whether or not it is valid per the Luhn formula.
+	 * 
+	 * The Luhn algorithm is a simple checksum formula used to validate a variety of
+	 * identification numbers, such as credit card numbers and Canadian Social
+	 * Insurance Numbers.
+	 * 
+	 * The task is to check if a given string is valid.
+	 * 
+	 * Validating a Number Strings of length 1 or less are not valid. Spaces are
+	 * allowed in the input, but they should be stripped before checking. All other
+	 * non-digit characters are disallowed.
+	 * 
+	 * Example 1: valid credit card number 1 4539 1488 0343 6467 The first step of
+	 * the Luhn algorithm is to double every second digit, starting from the right.
+	 * We will be doubling
+	 * 
+	 * 4_3_ 1_8_ 0_4_ 6_6_ If doubling the number results in a number greater than 9
+	 * then subtract 9 from the product. The results of our doubling:
+	 * 
+	 * 8569 2478 0383 3437 Then sum all of the digits:
+	 * 
+	 * 8+5+6+9+2+4+7+8+0+3+8+3+3+4+3+7 = 80 If the sum is evenly divisible by 10,
+	 * then the number is valid. This number is valid!
+	 * 
+	 * Example 2: invalid credit card number 1 8273 1232 7352 0569 Double the second
+	 * digits, starting from the right
+	 * 
+	 * 7253 2262 5312 0539 Sum the digits
+	 * 
+	 * 7+2+5+3+2+2+6+2+5+3+1+2+0+5+3+9 = 57 57 is not evenly divisible by 10, so
+	 * this number is not valid.
+	 * 
+	 * @param string
+	 * @return
+	 */
+	public boolean isLuhnValid(String string) {
+		String cleanedString;
+		int numberHolder;
+		int convertedNumber = 0;
+		int stringLength = string.length();
+		int oddOrEven;
+		boolean isLuhn = false;
+
+		string = string.replaceAll(" ", "");
+		cleanedString = string.replaceAll("[^0-9]", "");
+
+		if (string == cleanedString) {
+			if (stringLength % 2 == 0) {
+				oddOrEven = 0;
+			} else {
+				oddOrEven = 1;
+			}
+
+			for (int i = string.length() - 1; i > -1; i--) {
+				numberHolder = Character.getNumericValue(string.charAt(i));
+
+				if (i % 2 == oddOrEven) {
+					numberHolder = numberHolder * 2;
+					if (numberHolder > 9) {
+						numberHolder = 1 + (numberHolder % 10);
+					}
+				}
+				convertedNumber += numberHolder;
+			}
+
+			if (convertedNumber % 10 == 0) {
+				isLuhn = true;
+			}
+		}
+
+		return isLuhn;
+	}
+
+	/**
+	 * 20. Parse and evaluate simple math word problems returning the answer as an
+	 * integer.
+	 * 
+	 * Add two numbers together.
+	 * 
+	 * What is 5 plus 13?
+	 * 
+	 * 18
+	 * 
+	 * Now, perform the other three operations.
+	 * 
+	 * What is 7 minus 5?
+	 * 
+	 * 2
+	 * 
+	 * What is 6 multiplied by 4?
+	 * 
+	 * 24
+	 * 
+	 * What is 25 divided by 5?
+	 * 
+	 * 5
+	 * 
+	 * @param string
+	 * @return
+	 */
+	public int solveWordProblem(String string) {
+		StringTokenizer st = new StringTokenizer("");
+		String currentElement;
+		int firstNumber;
+		int secondNumber;
+		int solution = 0;
+
+		string = string.replaceAll("[^A-Za-z0-9- ]", "");
+		string = string.replace("What is", "");
+		st = new StringTokenizer(string, " ");
+
+		currentElement = st.nextToken();
+		firstNumber = Integer.parseInt(currentElement);
+
+		while (st.hasMoreElements()) {
+			currentElement = st.nextToken();
+		}
+		secondNumber = Integer.parseInt(currentElement);
+
+		if (string.contains("plus")) {
+			solution = firstNumber + secondNumber;
+		} else if (string.contains("minus")) {
+			solution = firstNumber - secondNumber;
+		} else if (string.contains("multiplied")) {
+			solution = firstNumber * secondNumber;
+		} else if (string.contains("divided")) {
+			solution = firstNumber / secondNumber;
+		}
+
+		return solution;
+	}
 
 }
