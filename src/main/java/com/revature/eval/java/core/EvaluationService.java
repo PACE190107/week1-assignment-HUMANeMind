@@ -130,7 +130,6 @@ public class EvaluationService {
 				return false;
 			}
 		}
-
 	}
 
 	/**
@@ -251,6 +250,7 @@ public class EvaluationService {
 
 		string = string.replaceAll("[^A-Za-z]", " ");
 		st = new StringTokenizer(string, " ");
+		// Without this, if the last word is found multiple times in the string it counts 1 time less than it should.
 		string += ".";
 
 		while (st.hasMoreTokens()) {
@@ -364,43 +364,30 @@ public class EvaluationService {
 		String currentWord = "";
 		int firstVowelIndex = -1;
 		StringTokenizer st = new StringTokenizer("");
-		String vowels = "aeiou";
-		String allVowels = vowels + "y";
+		String allVowels = "aeiouy";
 
 		string = string.replaceAll("[^A-Za-z]", " ");
+		string = string.toLowerCase();		
 		st = new StringTokenizer(string, " ");
 
 		while (st.hasMoreTokens()) {
 			currentWord = st.nextToken();
-			if (vowels.indexOf(Character.toLowerCase(currentWord.charAt(0))) != -1) {
-				currentWord += "ay ";
-				convertedWordOrPhrase += currentWord;
-			} else if (currentWord.charAt(0) == 'q' && currentWord.charAt(1) == 'u') {
+			if (currentWord.charAt(0) == 'q' && currentWord.charAt(1) == 'u') {
 				currentWord = currentWord.substring(2);
-				currentWord += "quay ";
-				convertedWordOrPhrase += currentWord;
+				currentWord += "qu";
 			} else {
-				String lowercaseCurrentWord = currentWord.toLowerCase();
-				for (int i = 0; i < lowercaseCurrentWord.length(); i++) {
-					if (allVowels.contains(String.valueOf(lowercaseCurrentWord.charAt(i)))) {
-						firstVowelIndex = i;
-
+				for (char c : currentWord.toCharArray()) {
+					firstVowelIndex = allVowels.indexOf(c);
+					if (firstVowelIndex > -1 && c != 'y') {						
+						currentWord = currentWord.substring(currentWord.indexOf(c)) + currentWord.substring(0, currentWord.indexOf(c));						
 						break;
-					}
-				}
-
-				if (firstVowelIndex > -1) {
-					if (firstVowelIndex == 0) {
-						firstVowelIndex = 1;
-					}
-					currentWord += currentWord.substring(0, firstVowelIndex);
-					currentWord = currentWord.substring(firstVowelIndex);
-					currentWord += "ay ";
-					convertedWordOrPhrase += currentWord;
+					} 
 				}
 			}
+			currentWord += "ay ";
+			convertedWordOrPhrase += currentWord;
 		}
-
+		
 		convertedWordOrPhrase = convertedWordOrPhrase.trim();
 		return convertedWordOrPhrase;
 	}
@@ -920,5 +907,4 @@ public class EvaluationService {
 
 		return solution;
 	}
-
 }
