@@ -134,7 +134,7 @@ public class User implements Serializable {
 	public String toString() {
 		// Removed password from this list because it should never be displayed in hashed or unhashed form
 		// Removed Id as well because that shouldn't be visible to users.
-		return "User [userName=" + userName + ", firstName=" + firstName 
-				+ ", lastName=" + lastName + "]";
+		return "User [Username: " + userName + ", First Name: " + firstName 
+				+ ", Last Name: " + lastName + "]";
 	}	
 }

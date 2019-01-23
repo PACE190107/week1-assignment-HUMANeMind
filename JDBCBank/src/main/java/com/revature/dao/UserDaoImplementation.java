@@ -101,7 +101,6 @@ public class UserDaoImplementation implements UserDao {
 			}
 
 		} catch (SQLException e) {
-			e.printStackTrace();
 			log.error("Unable to delete user due to a system error. Please contact a system administrator.");
 		}
 
@@ -133,7 +132,6 @@ public class UserDaoImplementation implements UserDao {
 			return allUsers;
 
 		} catch (SQLException e) {
-			e.printStackTrace();
 			log.error("Unable to return all users due to a system error. Please contact a system administrator.");
 		}
 
@@ -193,7 +191,6 @@ public class UserDaoImplementation implements UserDao {
 			}
 
 		} catch (SQLException e) {
-			e.printStackTrace();
 			log.error("Unable to validate password due to a system error. Please contact a system administrator.");
 		}
 		return false;
@@ -222,7 +219,6 @@ public class UserDaoImplementation implements UserDao {
 			}
 
 		} catch (SQLException e) {
-			e.printStackTrace();
 			log.error("Unable to find permissions for this user due to a system error. Please contact a system administrator.");
 		}
 

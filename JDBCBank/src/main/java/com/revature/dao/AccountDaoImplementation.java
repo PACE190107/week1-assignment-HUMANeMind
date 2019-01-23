@@ -38,7 +38,7 @@ public class AccountDaoImplementation implements AccountDao {
 
 			cs.setString(1, null);
 			cs.setString(2, insertedAccount.getNickName());
-			cs.setInt(3, insertedAccount.getBalance());
+			cs.setDouble(3, insertedAccount.getBalance());
 			cs.setInt(4, insertedAccount.getType());
 			cs.setInt(5, insertedAccount.getUpdatedBy());
 			cs.setInt(6, insertedAccount.getUserID());
@@ -49,7 +49,6 @@ public class AccountDaoImplementation implements AccountDao {
 			}
 
 		} catch (SQLException e) {
-			e.printStackTrace();
 			log.error("Unable to create account due to a system error. Please contact a system administrator.");
 		}
 
@@ -65,7 +64,7 @@ public class AccountDaoImplementation implements AccountDao {
 					"WHERE ACCOUNT_ID = ?";
 			PreparedStatement ps = conn.prepareStatement(sql);
 
-			ps.setInt(1, updatedAccount.getBalance());			
+			ps.setDouble(1, updatedAccount.getBalance());			
 			ps.setInt(2, updatedAccount.getUpdatedBy());
 			ps.setInt(3, updatedAccount.getId());
 			
@@ -74,8 +73,7 @@ public class AccountDaoImplementation implements AccountDao {
 				return true;
 			}
 
-		} catch (SQLException e) {
-			e.printStackTrace();
+		} catch (SQLException e) {			
 			log.error("Unable to update account due to a system error. Please contact a system administrator.");
 		}
 
@@ -96,7 +94,6 @@ public class AccountDaoImplementation implements AccountDao {
 			}
 
 		} catch (SQLException e) {
-			e.printStackTrace();
 			log.error("Unable to delete account due to a system error. Please contact a system administrator.");
 		}
 
@@ -129,7 +126,6 @@ public class AccountDaoImplementation implements AccountDao {
 			return allAccounts;
 
 		} catch (SQLException e) {
-			e.printStackTrace();
 			log.error("Unable to return all accounts due to a system error. Please contact a system administrator.");
 		}
 
@@ -163,7 +159,6 @@ public class AccountDaoImplementation implements AccountDao {
 			return allAccounts;
 
 		} catch (SQLException e) {
-			e.printStackTrace();
 			System.out.println("Unable to return all of your accounts due to a system error. Please contact a system administrator.");
 		}
 
@@ -231,7 +226,7 @@ public class AccountDaoImplementation implements AccountDao {
 		
 		try (Connection conn = JDBCConnectionUtil.getConnection()) {
 			// Create Query to return All Account Types			
-			String sql = "SELECT * FROM TRANSACTION_LOG WHERE FROM_ACCOUNT = ?";
+			String sql = "SELECT * FROM TRANSACTION_LOG WHERE FROM_ACCOUNT = ? ORDER BY EVENT_TIME DESC";
 			PreparedStatement ps = conn.prepareStatement(sql);			
 			ps.setInt(1, currentAccount.getId());
 			

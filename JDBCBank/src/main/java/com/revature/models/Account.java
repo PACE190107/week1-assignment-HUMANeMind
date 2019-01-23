@@ -9,7 +9,7 @@ public class Account implements Serializable {
 	private static final long serialVersionUID = 4130634115667662135L;
 	private int id;	
 	private String nickName;
-	private int balance;
+	private double balance;
 	private int type;
 	private String typeName;
 	private int updatedBy;
@@ -20,7 +20,7 @@ public class Account implements Serializable {
 		super();
 	}
 
-	public Account(int id, String nickName, int balance, int type, String typeName, int updatedBy, int userID) {
+	public Account(int id, String nickName, double balance, int type, String typeName, int updatedBy, int userID) {
 		super();
 		this.id = id;
 		this.nickName = nickName;
@@ -47,11 +47,11 @@ public class Account implements Serializable {
 		this.nickName = nickName;
 	}
 
-	public int getBalance() {
+	public double getBalance() {
 		return balance;
 	}
 
-	public void setBalance(int balance) {
+	public void setBalance(double balance) {
 		this.balance = balance;
 	}
 
@@ -95,7 +95,9 @@ public class Account implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + balance;
+		long temp;
+		temp = Double.doubleToLongBits(balance);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
 		result = prime * result + id;
 		result = prime * result + ((nickName == null) ? 0 : nickName.hashCode());
 		result = prime * result + type;
@@ -114,7 +116,7 @@ public class Account implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Account other = (Account) obj;
-		if (balance != other.balance)
+		if (Double.doubleToLongBits(balance) != Double.doubleToLongBits(other.balance))
 			return false;
 		if (id != other.id)
 			return false;
@@ -139,7 +141,7 @@ public class Account implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Account [id=" + id + ", nickName=" + nickName + ", balance=" + balance
-				+ ", typeName=" + typeName + "]";
+		return "Account [Account Number: " + id + ", Nickname: " + nickName + ", Account Balance: $" + String.format("%.2f", balance)
+				+ ", Account Type: " + typeName + "]";
 	}
 }

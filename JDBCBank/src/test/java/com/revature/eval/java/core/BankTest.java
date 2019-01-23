@@ -44,9 +44,10 @@ public class BankTest {
 	@Test
 	public void findAllUsers() {	
 		List<User> allUsers = new ArrayList<User>();
-		allUsers.add(new User(103,"T1", "03C2801F4DDB84B1C1890A4C0B299FB5", "t", "u", 103));
-		allUsers.add(new User(196,"T2", "03C2801F4DDB84B1C1890A4C0B299FB5", "t", "u", 101));
 		allUsers.add(new User(101,"S1", "FE04A7373FFAB5AA7D1FF42D23E90869", "Super", "User", 101));
+		allUsers.add(new User(103,"T1", "03C2801F4DDB84B1C1890A4C0B299FB5", "t", "u", 103));
+		allUsers.add(new User(196,"T2", "8C85754E841FFB7C97218E77F5D8E75C", "t", "u", 101));
+		
 	    
 //		System.out.println(allUsers);
 //		System.out.println(UserService.getUserService().findAllUsers());
@@ -125,7 +126,7 @@ public class BankTest {
 
 	@Test
 	public void modifyAccount() {	
-		Account newAccount = new Account(1000000029,"test1", 1, 2, "Checking", 103, 103);
+		Account newAccount = new Account(1000000066,"testChecking", 541.00, 2, "Checking", 103, 103);
 		Account foundAccount = new Account();
 		foundAccount = AccountService.getAccountService().findAccount(newAccount);
 		
@@ -137,8 +138,8 @@ public class BankTest {
 	public void getUsersAccounts() {	
 		User currentUser = new User(103,"T1", "03C2801F4DDB84B1C1890A4C0B299FB5", "t", "u", 103);
 		List<Account> allAccounts = new ArrayList<Account>();
-		allAccounts.add(new Account(1000000028, "test", 100, 1, "Savings", 103, 103));
-		allAccounts.add(new Account(1000000029, "test1", 10000, 2, "Checking", 103, 103));
+		allAccounts.add(new Account(1000000066, "testChecking", 10000.00, 2, "Checking", 103, 103));
+		allAccounts.add(new Account(1000000028, "test", 1.00, 1, "Savings", 103, 103));
 		
 	   assertEquals(allAccounts, AccountService.getAccountService().findUsersAccounts(currentUser));
 	}
@@ -163,8 +164,8 @@ public class BankTest {
 		List<Transaction> transactions = new ArrayList<Transaction>();
 		Account currentAccount = new Account(1000000023,"test", 0, 1, "Savings", 101, 101);
 		
-		transactions.add(new Transaction(29, 1000000023, 100, 0, 101, LocalDateTime.parse("2019-01-21T21:38:15")));
 		transactions.add(new Transaction(31, 1000000023, 0, 10000, 101, LocalDateTime.parse("2019-01-21T21:38:48")));
+		transactions.add(new Transaction(29, 1000000023, 100, 0, 101, LocalDateTime.parse("2019-01-21T21:38:15")));
 		
 		assertEquals(transactions, AccountService.getAccountService().getTransactions(currentAccount));
 	}

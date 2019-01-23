@@ -25,9 +25,12 @@ public class BankApplication {
 
 	public static void main(String[] args) {
 		boolean loginSuccessful = false;
-
+		
+		System.out.println("Welcome to the JDBCBank Application!");
+		// Chose to login, create account, or logout
 		loginSuccessful = bankApplication.createOrLogin();
 
+		// Login or creation successful so proceed with the rest of the application
 		if (loginSuccessful) {
 			userDetails = UserService.getUserService().findUser(userDetails, "Name");
 			System.out.println("Welcome " + userDetails.getFirstName() + ".");
@@ -37,17 +40,12 @@ public class BankApplication {
 		}
 	}
 
-	public void bankMain() {
-		validSelection = "PAL";
+	// The main menu for this application
+	public void bankMain() {		
 		isValid = false;
-		char entered = ' ';
-		// Manager and Teller permissions are not implemented at this time
-		// So all users at this point will be either a User or a Super
-		if (permissions.contains("Super")) {
-			isSuper = true;
-			validSelection += "U";
-		}
+		char entered = ' ';		
 
+		//Loop through the menu choices until a valid entry is made
 		while (!isValid) {
 			entered = bankApplication.displayOptions();
 
@@ -62,9 +60,11 @@ public class BankApplication {
 			}
 		}
 
+		// Valid entry was made so determine which entry the user made
 		switch (entered) {
 		case 'U':
 			if (isSuper) {
+				System.out.println("-------------------------");
 				System.out.println("Manage Users:");
 				bankApplication.manageUsers();
 			} else {
@@ -72,11 +72,11 @@ public class BankApplication {
 			}
 			break;
 		case 'P':
+			System.out.println("-------------------------");
 			System.out.println("Manage Your Profile:");
 			bankApplication.manageProfile();
 			break;
 		case 'A':
-			System.out.println("Manage Accounts:");
 			bankApplication.manageAccounts();
 			break;
 		case 'L':
@@ -85,22 +85,25 @@ public class BankApplication {
 		}
 	}
 
+	// Chose to login, create account, or logout
 	public boolean createOrLogin() {
 		String typeOfLogin;
 		boolean loginCondition = false;
 
 		System.out.println("1 to Login");
 		System.out.println("2 to Create a New User");
-		System.out.println("anything else to Exit");
+		System.out.println("Enter anything else to Exit");
 		System.out.println("Enter Selection: ");
 
 		typeOfLogin = sc.nextLine();
 
 		switch (typeOfLogin) {
 		case "1":
+			//Loop through the login process until a valid username and password are entered
 			while (!loginCondition) {
 				userDetails = inputLogin();
 
+				// Validates that the entered password and username matches a username and password combination in the database
 				loginCondition = UserService.getUserService().validateLogin(userDetails.getUserName(),
 						userDetails.getPassword());
 
@@ -113,6 +116,8 @@ public class BankApplication {
 
 		case "2":
 			while (!loginCondition) {
+				// Keep looping through this until a user is created successfully
+				// Username must be unique, if they aren't you can't make that user
 				userDetails = newLogin();
 				loginCondition = UserService.getUserService().registerUser(userDetails);
 			}
@@ -123,6 +128,7 @@ public class BankApplication {
 		}
 	}
 
+	// Method to get and return user's first and last name
 	public User inputNames() {
 		String firstName;
 		String lastName;
@@ -139,11 +145,13 @@ public class BankApplication {
 		return tempUser;
 	}
 
+	// Method to get and return user's username and password
 	public User inputLogin() {
 		String userName = null;
 		String password = null;
 		User tempUser = new User();
 
+		System.out.println("-------------------------");
 		System.out.println("User Name: ");
 		userName = sc.nextLine();
 		System.out.println("Password: ");
@@ -155,6 +163,7 @@ public class BankApplication {
 		return tempUser;
 	}
 
+	// Method to get user's full details
 	public User newLogin() {
 		User tempUser = new User();
 		User tempUser2 = new User();
@@ -167,21 +176,30 @@ public class BankApplication {
 		return tempUser;
 	}
 
+	// Logs the user out of the application
 	public void logout() {
 		System.out.println("Thank you for using this application.");
 		System.out.println("Goodbye.");
 		System.exit(1);
 	}
 
+	// Displays the options for the main program.
+	// The variable to hold the valid options is
 	public char displayOptions() {
 		char choiceMade;
 
+		// All users can manage their own profile and all their own accounts
+		validSelection = "PAL";
+		System.out.println("-------------------------");
 		// Manager and Teller permissions are not implemented at this time
 		// So all users at this point will be either a User or a Super
-		if (isSuper) {
+		if (permissions.contains("Super")) {
 			System.out.println("U to Manage All Users");
+			isSuper = true;
+			validSelection += "U";
 		}
-
+		
+		System.out.println("What would you like to do?");
 		System.out.println("P to Manage Your User Profile");
 		System.out.println("A to Manage Your Accounts");
 		System.out.println("L to Logout");
@@ -191,9 +209,11 @@ public class BankApplication {
 		return choiceMade;
 	}
 
+	// Display the options for all the other menus other than the main
 	public String displayOptions(List<String> options, boolean canLogout) {
 		String choiceMade = null;
 
+		System.out.println("-------------------------");
 		for (String s : options) {
 			System.out.println(s);
 		}
@@ -207,6 +227,7 @@ public class BankApplication {
 		return choiceMade;
 	}
 
+	// Loops the current displayed options until a valid one is entered
 	public String optionLooper(List<String> options, boolean canLogout) {
 		String choice = null;
 		String token = null;
@@ -231,12 +252,14 @@ public class BankApplication {
 		return choice;
 	}
 
+	// The closing options that are a part of every menu after the main menu
 	public void optionsCloser() {
 		System.out.println("R to Return to the Main menu");
 		System.out.println("L to Logout");
 		System.out.println("Enter Selection: ");
 	}
 
+	// The manage Users menu logic
 	public void manageUsers() {
 		List<String> options = new ArrayList<String>();
 		String chosen = null;
@@ -274,7 +297,7 @@ public class BankApplication {
 				int editId = Integer.parseInt(chosen) - 1;
 				User editUser = UserService.getUserService().findUser(usersList.get(editId), "ID");
 
-				chosen = userModifyOrDelete(editUser);
+				chosen = userOptions(editUser);
 
 				if (chosen.equals("L") || chosen.equals("Y")) {
 					logout();
@@ -288,10 +311,11 @@ public class BankApplication {
 		}
 	}
 
+	// The manage Profile menu logic
 	public void manageProfile() {
 		String chosen;
 		System.out.println(UserService.getUserService().findUser(userDetails, "Name"));
-		chosen = userModifyOrDelete(userDetails);
+		chosen = userOptions(userDetails);
 
 		if (chosen.equals("L") || chosen.equals("Y")) {
 			logout();
@@ -303,7 +327,8 @@ public class BankApplication {
 		manageProfile();
 	}
 
-	public String userModifyOrDelete(User editUser) {
+	// Used to determine the action being taken on an existing user
+	public String userOptions(User editUser) {
 		List<String> options = new ArrayList<String>();
 		String chosen;
 
@@ -323,7 +348,7 @@ public class BankApplication {
 			if (userDetails.getId() == editUser.getId()) {
 				options.clear();
 				validSelection = "Y,N,R,L";
-				System.out.println("Deleting your own account will kick you from the system.");
+				System.out.println("Deleting your own account will remove you from the system.");
 				System.out.println("If you proceed you won't be able to log in again on this account.");
 				options.add("Y to Continue");
 				options.add("N to Cancel");
@@ -346,6 +371,7 @@ public class BankApplication {
 		return chosen;
 	}
 
+	// Used to modify the selected user
 	public void modifyUser(User editUser) {
 		User tempUser;
 		tempUser = newLogin();
@@ -354,6 +380,7 @@ public class BankApplication {
 		UserService.getUserService().modifyUser(tempUser);
 	}
 
+	// The manage Account menu logic
 	public void manageAccounts() {
 		List<String> options = new ArrayList<String>();
 		String chosen = null;
@@ -363,7 +390,8 @@ public class BankApplication {
 
 			options.add("0 to create a new Account");
 			validSelection = "0,";
-
+			
+			System.out.println("Manage " + userDetails.getFirstName() + "'s accounts:");
 			for (Account a : accountsList) {
 				System.out.println(a);
 				options.add(accountsList.indexOf(a) + 1 + " to edit " + a.getNickName());
@@ -402,14 +430,16 @@ public class BankApplication {
 				manageAccounts();
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			log.error("Unable to Manage Accounts due to a system error. Please contact a system administrator.");
 		}
 	}
 
+	// Used to determine the action being taken on an existing account
 	public String accountOptions(Account editAccount) {
 		List<String> options = new ArrayList<String>();
 		String chosen;
-		int amount;
+		double amount;
 
 		System.out.println(editAccount);
 		editAccount.setUpdatedBy(userDetails.getId());
@@ -425,8 +455,24 @@ public class BankApplication {
 		switch (chosen) {
 		case "S":
 			System.out.println("Amount to Deposit:");
-			amount = editAccount.getBalance() + Integer.parseInt(sc.nextLine());
-			editAccount.setBalance(amount);
+			
+			isValid = false;
+			
+			while (!isValid) {
+				amount = Double.parseDouble(sc.nextLine());
+				
+				if (amount < 0) {
+					System.out.println("You cannot Deposit a negative ammount.");
+					System.out.println("Try again:");
+					continue;
+				}
+				else {
+					amount = editAccount.getBalance() + amount;
+					editAccount.setBalance(amount);
+					isValid = true;
+				}
+			}				
+			
 			AccountService.getAccountService().modifyAccount(editAccount);
 			break;
 		case "W":
@@ -434,7 +480,14 @@ public class BankApplication {
 			
 			while (!isValid) {
 				System.out.println("Amount to Withdraw:");
-				amount = Integer.parseInt(sc.nextLine());
+				amount = Double.parseDouble(sc.nextLine());
+				
+				if (amount < 0) {
+					System.out.println("You cannot Withdraw a negative ammount.");
+					System.out.println("Try again:");
+					continue;
+				}
+				
 				if (amount <= editAccount.getBalance()){
 					amount = editAccount.getBalance() - amount;
 					isValid = true;
@@ -450,12 +503,14 @@ public class BankApplication {
 		case "T":
 			List<Transaction> transactions = AccountService.getAccountService().getTransactions(editAccount);
 			if (transactions.size() > 0) {
+				System.out.println("Transactions for " + transactions.get(0).getAccountID());
 				for (Transaction t : transactions) {
 					System.out.println(t);
 				}
 			} else {
 				System.out.println("There are no transactions for this account.");
-			}			
+			}
+			System.out.println("-------------------------");
 			break;
 		case "D":
 			if (editAccount.getBalance() == 0){
@@ -473,6 +528,7 @@ public class BankApplication {
 		return chosen;
 	}
 
+	// Method to create a new Account
 	public Account newAccount() {
 		String nickName = null;
 		String balance;

@@ -10,8 +10,8 @@ public class Transaction implements Serializable {
 	private static final long serialVersionUID = 7404893430151498521L;
 	private int id;	
 	private int accountID;
-	private int previousBalance;
-	private int newBalance;
+	private double previousBalance;
+	private double newBalance;
 	private int userID;
 	private LocalDateTime eventTime;	
 	
@@ -20,7 +20,7 @@ public class Transaction implements Serializable {
 	}
 	
 
-	public Transaction(int id, int accountID, int previousBalance, int newBalance, int userID,
+	public Transaction(int id, int accountID, double previousBalance, double newBalance, int userID,
 			LocalDateTime eventTime) {
 		super();
 		this.id = id;
@@ -52,7 +52,7 @@ public class Transaction implements Serializable {
 	}
 
 
-	public int getPreviousBalance() {
+	public double getPreviousBalance() {
 		return previousBalance;
 	}
 
@@ -62,7 +62,7 @@ public class Transaction implements Serializable {
 	}
 
 
-	public int getNewBalance() {
+	public double getNewBalance() {
 		return newBalance;
 	}
 
@@ -90,8 +90,7 @@ public class Transaction implements Serializable {
 	public void setEventTime(LocalDateTime eventTime) {
 		this.eventTime = eventTime;
 	}
-
-
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -99,12 +98,14 @@ public class Transaction implements Serializable {
 		result = prime * result + accountID;
 		result = prime * result + ((eventTime == null) ? 0 : eventTime.hashCode());
 		result = prime * result + id;
-		result = prime * result + newBalance;
-		result = prime * result + previousBalance;
+		long temp;
+		temp = Double.doubleToLongBits(newBalance);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		temp = Double.doubleToLongBits(previousBalance);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
 		result = prime * result + userID;
 		return result;
 	}
-
 
 	@Override
 	public boolean equals(Object obj) {
@@ -124,18 +125,19 @@ public class Transaction implements Serializable {
 			return false;
 		if (id != other.id)
 			return false;
-		if (newBalance != other.newBalance)
+		if (Double.doubleToLongBits(newBalance) != Double.doubleToLongBits(other.newBalance))
 			return false;
-		if (previousBalance != other.previousBalance)
+		if (Double.doubleToLongBits(previousBalance) != Double.doubleToLongBits(other.previousBalance))
 			return false;
 		if (userID != other.userID)
 			return false;
 		return true;
 	}
 
+
 	@Override
 	public String toString() {
-		return "Transaction [accountID=" + accountID + ", previousBalance=" + previousBalance
-				+ ", newBalance=" + newBalance + ", eventTime=" + eventTime + "]";
+		return "Transaction [Previous Balance: $" + String.format("%.2f", previousBalance)
+				+ ", Change: $" + String.format("%.2f", (newBalance - previousBalance))+ ", New Balance: $" + String.format("%.2f", newBalance) + ", Time of Transaction: " + eventTime + "]";
 	}	
 }
