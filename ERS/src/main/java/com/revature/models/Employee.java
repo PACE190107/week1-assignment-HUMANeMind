@@ -8,7 +8,7 @@ public class Employee implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -7398392194858463590L;
-	private int id;	
+	private int employeeID;	
 	private String userName;
 	private String password;
 	private String firstName;
@@ -25,7 +25,7 @@ public class Employee implements Serializable {
 	public Employee(int id, String userName, String password, String firstName, String lastName, String email,
 			int permissionId, String permissionName, boolean temporaryPassword) {
 		super();
-		this.id = id;
+		this.employeeID = id;
 		this.userName = userName;
 		this.password = password;
 		this.firstName = firstName;
@@ -36,12 +36,12 @@ public class Employee implements Serializable {
 		this.temporaryPassword = temporaryPassword;
 	}
 
-	public int getId() {
-		return id;
+	public int getEmployeeID() {
+		return employeeID;
 	}
 
 	public void setId(int id) {
-		this.id = id;
+		this.employeeID = id;
 	}
 
 	public String getUserName() {
@@ -114,7 +114,7 @@ public class Employee implements Serializable {
 		int result = 1;
 		result = prime * result + ((email == null) ? 0 : email.hashCode());
 		result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());
-		result = prime * result + id;
+		result = prime * result + employeeID;
 		result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
 		result = prime * result + ((password == null) ? 0 : password.hashCode());
 		result = prime * result + permissionId;
@@ -143,7 +143,7 @@ public class Employee implements Serializable {
 				return false;
 		} else if (!firstName.equals(other.firstName))
 			return false;
-		if (id != other.id)
+		if (employeeID != other.employeeID)
 			return false;
 		if (lastName == null) {
 			if (other.lastName != null)
@@ -174,7 +174,7 @@ public class Employee implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Employee [id=" + id + ", userName=" + userName + ", password=" + password + ", firstName=" + firstName
+		return "Employee [id=" + employeeID + ", userName=" + userName + ", password=" + password + ", firstName=" + firstName
 				+ ", lastName=" + lastName + ", email=" + email + ", permissionId=" + permissionId + ", permissionName="
 				+ permissionName + ", temporaryPassword=" + temporaryPassword + "]";
 	}

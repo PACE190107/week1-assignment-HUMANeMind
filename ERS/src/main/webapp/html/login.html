@@ -11,14 +11,14 @@
 		crossorigin="anonymous">
 </head>
 
-<body ng-app="ersApp" ng-init="loginForm = true">
+<body ng-app="ersApp" ng-init="loginForm = true"  ng-controller="employeeCtrl">
 	<button id="btnNewEmployee" name="NewEmployee" ng-click="loginForm = false">New Employee</button>
 	<button id="btnLoginForm" name="LoginForm" ng-click="loginForm = true">Login</button>
+	<button id="btnLogout" name="Logout" ng-click="logOut()">Logout</button>
 	
 	<header> 
 	</header>
-	<section ng-controller="employeeCtrl"> 	
-	<h1>{{employee.id}}</h1>	
+	<section>
 		<label for="UserName">User Name: </label>
 		<input id="username" name="UserName" type="text" ng-model="employee.userName"/>
 		<br>
@@ -48,8 +48,7 @@
 		<button id="btnLogin" name="Login" ng-show="loginForm" ng-click="attmeptLogin()">Login</button>
 		<button id="btnCreate" name="Create" ng-show="!loginForm" ng-click="attmeptCreate()">Sign-up</button>					 					
 	</section>
-	<footer> 
-		<button id="btnLogout" name="Logout">Logout</button>
+	<footer>		
 	</footer>
 	<script type="text/javascript" src="../js/login.js"></script>
 </body>

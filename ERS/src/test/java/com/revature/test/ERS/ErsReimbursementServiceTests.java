@@ -39,27 +39,34 @@ public class ErsReimbursementServiceTests {
 
 	@Ignore
 	@Test
-	public void modifyReimbursement() {	
+	public void modifyReimbursement() {
 		Reimbursement foundReimbursement = new Reimbursement();
 		foundReimbursement.setId(1005);
-		foundReimbursement = ReimbursementServiceImplementation.getReimbursementService().findReimbursement(foundReimbursement);
-		
+		foundReimbursement = ReimbursementServiceImplementation.getReimbursementService()
+				.findReimbursement(foundReimbursement, "ID");
+
 		foundReimbursement.setStatus(1);
-	   assertTrue(ReimbursementServiceImplementation.getReimbursementService().modifyReimbursement(foundReimbursement));
-	  
-	   foundReimbursement.setStatus(2);
-	   ReimbursementServiceImplementation.getReimbursementService().modifyReimbursement(foundReimbursement);
+		assertTrue(
+				ReimbursementServiceImplementation.getReimbursementService().modifyReimbursement(foundReimbursement));
+
+		foundReimbursement.setStatus(2);
+		ReimbursementServiceImplementation.getReimbursementService().modifyReimbursement(foundReimbursement);
 	}
-	
+
 	@Test
 	public void getAllReimbursements() {
 		List<Reimbursement> allReimbursements = new ArrayList<Reimbursement>();
 
-		allReimbursements.add(new Reimbursement(1006, 1, "Pending", "test", 101, "E1", 102, "E2", 100.00,
-				LocalDateTime.parse("2019-02-04T14:03:17"), "None", LocalDate.parse("2019-02-07")));
-
-		assertEquals(allReimbursements,
-				ReimbursementServiceImplementation.getReimbursementService().getAllReimbursements(1));
+		allReimbursements.add(new Reimbursement(1021, 1, "Pending", "nothing", 101, "E1", 101, "E1", 50000.0,
+				LocalDateTime.parse("2019-02-08T16:05:16"), "games", LocalDate.parse("2019-01-02")));
+		
+		List<Reimbursement> systemReimbursements = ReimbursementServiceImplementation.getReimbursementService()
+				.getAllReimbursements(1);
+		
+		// Because this will keep growing during testing just test that the oldest
+		// History entry matches
+		systemReimbursements.subList(0, systemReimbursements.size() - 1).clear();
+		assertEquals(allReimbursements, systemReimbursements);
 	}
 
 	@Test
@@ -71,29 +78,36 @@ public class ErsReimbursementServiceTests {
 		allReimbursements.add(new Reimbursement(1006, 1, "Pending", "test", 101, "E1", 102, "E2", 100.00,
 				LocalDateTime.parse("2019-02-04T14:03:17"), "None", LocalDate.parse("2019-02-07")));
 
-		assertEquals(allReimbursements, ReimbursementServiceImplementation.getReimbursementService()
-				.findEmployeesReimbursements(currentEmployee, 1));
+		List<Reimbursement> systemReimbursements = ReimbursementServiceImplementation.getReimbursementService()
+				.findEmployeesReimbursements(currentEmployee);
+		// Because this will keep growing during testing just test that the oldest
+		// History entry matches
+		systemReimbursements.subList(0, systemReimbursements.size() - 1).clear();
+		assertEquals(allReimbursements, systemReimbursements);
 	}
-	
+
 	@Test
 	public void getReimbursementByID() {
 		Reimbursement toFind = new Reimbursement(1006, 1, "Pending", "test", 101, "E1", 102, "E2", 100.00,
-				LocalDateTime.parse("2019-02-04T14:03:17"), "None", LocalDate.parse("2019-02-07"));		
+				LocalDateTime.parse("2019-02-04T14:03:17"), "None", LocalDate.parse("2019-02-07"));
 
-		assertEquals(toFind, ReimbursementServiceImplementation.getReimbursementService().findReimbursement(toFind));
+		assertEquals(toFind,
+				ReimbursementServiceImplementation.getReimbursementService().findReimbursement(toFind, "ID"));
 	}
-	
+
 	@Test
 	public void getReimbursementHistoryByID() {
 		Reimbursement toFind = new Reimbursement();
 		toFind.setId(1005);
-		
+
 		List<ReimbursementHistory> history = new ArrayList<ReimbursementHistory>();
-		history.add(new ReimbursementHistory(1,1005,1,2,101,LocalDateTime.parse("2019-02-05T03:00:39")));
-		
-		// Because this will keep growing during testing just test that the oldest History entry matches
-		List<ReimbursementHistory> history2 = ReimbursementServiceImplementation.getReimbursementService().getHistory(toFind);
-		history2.subList(0, history2.size()-1).clear();
+		history.add(new ReimbursementHistory(1, 1005, 1, 2, 101, LocalDateTime.parse("2019-02-05T03:00:39")));
+
+		// Because this will keep growing during testing just test that the oldest
+		// History entry matches
+		List<ReimbursementHistory> history2 = ReimbursementServiceImplementation.getReimbursementService()
+				.getHistory(toFind);
+		history2.subList(0, history2.size() - 1).clear();
 
 		assertEquals(history, history2);
 	}

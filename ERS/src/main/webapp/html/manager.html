@@ -12,62 +12,101 @@
 			integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
 			crossorigin="anonymous">
 	</head>
-	<body ng-app="ersApp" ng-controller="formCtrl" ng-init="switchTemplate('newEmployee'); new = true;">
-		<button id="btnNewEmployee" name="NewEmployee" ng-click="switchTemplate('newEmployee'); new = true">New Employee</button>
-		<button id="btnViewManager" name="ViewManager" ng-click="switchTemplate('viewManager'); new = false">Profile</button>
-		<button id="btnNewReimbursement" name="NewReimbursement" ng-click="switchTemplate('newReimbursement')">Reimbursement</button>
-		<button id="btnViewReimbursements" name="ViewReimbursements" ng-click="switchTemplate('viewReimbursements')">Reimbursements</button>
+	<body ng-app="ersApp" ng-controller="formCtrl"ng-init="formTemplate = 'viewManager' ">
+		<button id="btnManager" name="ViewManager" ng-click="formTemplate = 'viewManager'; editable = false ">Manager Profile</button>
+		<button id="btnManageEmployees" name="ManageEmployees" ng-click="formTemplate = 'manageEmployees'; editable = false ">Manage Employees</button>
+		<button id="btnNewReimbursement" name="NewReimbursement" ng-click="formTemplate = 'newReimbursement' ">New Reimbursement</button>
+		<button id="btnManageReimbursements" name="ManageReimbursements" ng-click="formTemplate = 'viewReimbursements' ">Manage Reimbursements</button>
+        <button id="btnLogout" name="Logout" ng-click="logOut()">Logout</button>
         
-		<section ng-controller="employeeCtrl" ng-if="formTemplate == 'viewEmployee' || formTemplate == 'newEmployee' "> 
+		<section ng-if="formTemplate == 'viewManager'">
 			<form>
-				<button id="btnEdit" name="Edit" ng-show="formTemplate == 'viewEmployee'" ng-click="editable = !editable">Edit</button>
-				<button id="btnManager" name="Manager" ng-show="formTemplate == 'viewEmployee'" ng-click="manager = !manager" ng-init="manager = false">Manager</button>
+			{{manager}}
+				<button id="btnEdit" name="Edit" ng-click="editable = !editable" ng-init="editable = false">Edit</button>
 				
 				<div>					
 					<label for="UserName">User Name: </label>
-					<input id="username" name="UserName" type="text" ng-if="editable || new" ng-model="userName"/>
-					<label ng-if="!editable && !new" >{{userName}}</label>			
+					<label>{{manager.userName}}</label>	
 					<br>
 					
 					<label for="Password">Password: </label>
-					<input id="password" name="Password" type="password" ng-if="editable || new" ng-model="password"/>
-					<label ng-if="!editable && !new" >{{password}}</label>	
+					<input id="password" name="Password" type="password" ng-if="editable" ng-model="manager.password"/>
+					<label ng-if="!editable" >##########</label>	
 					<br>
 					 
 					<label for="Email">Email: </label>
-					<input id="email" name="Email" type="text" ng-if="editable || new" ng-model="email"/>
-					<label ng-if="!editable && !new" >{{email}}</label>	
+					<input id="email" name="Email" type="text" ng-if="editable" ng-model="manager.email"/>
+					<label ng-if="!editable" >{{manager.email}}</label>	
 					<br>
 					
 					<label for="FirstName">First Name: </label>
-					<input id="firstName" name="FirstName" type="text" ng-if="editable || new" ng-model="firstName"/>
-					<label ng-if="!editable && !new" >{{firstName}}</label>	
+					<input id="firstName" name="FirstName" type="text" ng-if="editable" ng-model="manager.firstName"/>
+					<label ng-if="!editable" >{{manager.firstName}}</label>	
 					<br>
 					
 					<label for="LastName">Last Name: </label>
-					<input id="lastName" name="LastName" type="text" ng-if="editable || new" ng-model="lastName"/>
-					<label ng-if="!editable && !new" >{{lastName}}</label>	
+					<input id="lastName" name="LastName" type="text" ng-if="editable" ng-model="manager.lastName"/>
+					<label ng-if="!editable" >{{manager.lastName}}</label>	
 					<br>
 					
-					<div ng-if="formTemplate == 'viewEmployee'">
 					<label for="Permission">Permission: </label>
-					<input id="permission" name="Permission" type="text" ng-if="manager && editable || new" ng-model="permission"/>
-					<label ng-if="!editable && !new || !manager" >{{permission}}</label>	
-					<br>
-					</div>
+					<select id="permission" name="Permission" ng-if="editable" ng-model="manager.permissionId" ng-options="p.id as p.name for p in permissions">
+					</select>
+					<label ng-if="!editable" >{{manager.permissionName}}</label>	
+					<br>					
 					
-					
-					<button id="btnUpdate" name="Update" ng-if="editable && !new">Update</button>
-					<button id="btnCreate" name="Create" ng-if="new">Create</button>
-					<br ng-if="new || editable">
+					<button id="btnUpdate" name="Update" ng-if="editable" ng-click="attmeptEdit()">Update</button>
+					<br ng-if="editable">
 				</div>		
 			</form>
 		</section>
-		<section  ng-controller="reimbursementsCtrl" ng-if="formTemplate == 'viewReimbursements'">
-			<label for="Statuses">Filter By Status: </label>
-			<select name="Statuses" ng-model="statusIDs" ng-options="x.status for x in statuses">
+		<section ng-if="formTemplate == 'manageEmployees'">
+			{{manager}}
+			<form>
+				<button id="btnEdit2" name="Edit2" ng-click="editable = !editable" ng-init="editable = false">Edit</button>
+				
+				
+			<select name="Employees" ng-model="employee" ng-options="e.employeeID as e.userName for e in employees">
 			</select>
-			{{statusIDs.id}}
+				<div>					
+					<label for="UserName">User Name: </label>
+					<label>{{employee.userName}}</label>	
+					<br>
+					
+					<label for="Password">Password: </label>
+					<input id="password" name="Password" type="password" ng-if="editable" ng-model="employee.password"/>
+					<label ng-if="!editable" >##########</label>	
+					<br>
+					 
+					<label for="Email">Email: </label>
+					<input id="email" name="Email" type="text" ng-if="editable" ng-model="employee.email"/>
+					<label ng-if="!editable" >{{employee.email}}</label>	
+					<br>
+					
+					<label for="FirstName">First Name: </label>
+					<input id="firstName" name="FirstName" type="text" ng-if="editable" ng-model="employee.firstName"/>
+					<label ng-if="!editable" >{{employee.firstName}}</label>	
+					<br>
+					
+					<label for="LastName">Last Name: </label>
+					<input id="lastName" name="LastName" type="text" ng-if="editable" ng-model="employee.lastName"/>
+					<label ng-if="!editable" >{{employee.lastName}}</label>	
+					<br>
+					
+					<label for="Permission">Permission: </label>
+					<select id="permission" name="Permission" ng-if="editable" ng-model="employee.permissionId" ng-options="p.id as p.name for p in permissions">
+					</select>
+					<label ng-if="!editable" >{{employee.permissionName}}</label>	
+					<br>					
+					
+					<button id="btnUpdateEmployee" name="UpdateEmployee" ng-if="editable" ng-click="attmeptEditEmployee()">Update Employee</button>
+					<br ng-if="editable">
+				</div>		
+			</form>
+		<section ng-if="formTemplate == 'viewReimbursements'">
+			<label for="Statuses">Filter By Status: </label>
+			<select name="Statuses" ng-model="statusIDs" ng-options="s.status for s in statuses">
+			</select>
 			<table class="table table-bordered table-striped">
 				<tr>
 					<th ng-repeat="head in headers"> {{head.name}}</th>
@@ -80,12 +119,16 @@
 				    <td>{{ reimbursement.submittedOn }}</td>				    
 				    <td>{{ reimbursement.updatedBy }}</td>
 				    <td>{{ reimbursement.status }}</td>
+				    <td>
+				    <button id="btnApprove" name="Approve"  ng-click="attemptApproval(reimbursement.id)">Approve</button>
+					<button id="btnDeny" name="Deny" ng-click="attemptDeny(reimbursement.id)">Deny</button>
+					<td>
 				  </tr>
 			</table>
 			<br>
 		</section>
 		
-		<section  ng-controller="reimburseCtrl" ng-if="formTemplate == 'newReimbursement'">	
+		<section ng-if="formTemplate == 'newReimbursement'">	
 			<label for="Amount">Amount: </label>
 			<input id="amount" name="Amount" type="text" ng-model="amount"/>
 			<br>
@@ -102,12 +145,11 @@
 			{{reason}}
 			{{expenseDate}}
 			<br>
-			<button id="btnSubmit" name="Submit">Submit</button>
+			<button id="btnSubmit" name="Submit" ng-click="attmeptSubmit()">Submit</button>
 		</section>
 		
-		<footer>		
-			<button id="btnLogout" name="Logout">Logout</button>
+		<footer>			
 		</footer>
-		<script type="text/javascript" src="../js/manager.js"></script>
+		<script type="text/javascript" src="../js/employee.js"></script>
 	</body>
 </html>

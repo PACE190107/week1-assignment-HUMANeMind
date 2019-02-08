@@ -11,57 +11,54 @@
 			crossorigin="anonymous">
 	</head>
 	
-	<body ng-app="ersApp" ng-init="formTemplate = 'viewEmployee' ">
+	<body ng-app="ersApp" ng-controller="formCtrl"ng-init="formTemplate = 'viewEmployee' ">
 		<button id="btnViewEmployee" name="ViewEmployee" ng-click="formTemplate = 'viewEmployee' ">View Profile</button>
 		<button id="btnNewReimbursement" name="NewReimbursement" ng-click="formTemplate = 'newReimbursement' ">New Reimbursement</button>
 		<button id="btnViewReimbursements" name="ViewReimbursements" ng-click="formTemplate = 'viewReimbursements' ">View Reimbursements</button>
+        <button id="btnLogout" name="Logout" ng-click="logOut()">Logout</button>
         
-		<section ng-controller="employeeCtrl" ng-if="formTemplate == 'viewEmployee'"> 
+		<section ng-if="formTemplate == 'viewEmployee'">		
 			<form>
 				<button id="btnEdit" name="Edit" ng-click="editable = !editable" ng-init="editable = false">Edit</button>
-				<button id="btnManager" name="Manager" ng-click="manager = !manager" ng-init="manager = false">Manager</button>
-				
+			
 				<div>					
 					<label for="UserName">User Name: </label>
-					<input id="username" name="UserName" type="text" ng-if="editable" ng-model="userName"/>
-					<label ng-if="!editable" >{{userName}}</label>			
+					<label>{{employee.userName}}</label>	
 					<br>
 					
 					<label for="Password">Password: </label>
-					<input id="password" name="Password" type="password" ng-if="editable" ng-model="password"/>
-					<label ng-if="!editable" >{{password}}</label>	
+					<input id="password" name="Password" type="password" ng-if="editable" ng-model="employee.password"/>
+					<label ng-if="!editable" >##########</label>	
 					<br>
 					 
 					<label for="Email">Email: </label>
-					<input id="email" name="Email" type="text" ng-if="editable" ng-model="email"/>
-					<label ng-if="!editable" >{{email}}</label>	
+					<input id="email" name="Email" type="text" ng-if="editable" ng-model="employee.email"/>
+					<label ng-if="!editable" >{{employee.email}}</label>	
 					<br>
 					
 					<label for="FirstName">First Name: </label>
-					<input id="firstName" name="FirstName" type="text" ng-if="editable" ng-model="firstName"/>
-					<label ng-if="!editable" >{{firstName}}</label>	
+					<input id="firstName" name="FirstName" type="text" ng-if="editable" ng-model="employee.firstName"/>
+					<label ng-if="!editable" >{{employee.firstName}}</label>	
 					<br>
 					
 					<label for="LastName">Last Name: </label>
-					<input id="lastName" name="LastName" type="text" ng-if="editable" ng-model="lastName"/>
-					<label ng-if="!editable" >{{lastName}}</label>	
+					<input id="lastName" name="LastName" type="text" ng-if="editable" ng-model="employee.lastName"/>
+					<label ng-if="!editable" >{{employee.lastName}}</label>	
 					<br>
 					
 					<label for="Permission">Permission: </label>
-					<input id="permission" name="Permission" type="text" ng-if="manager && editable" ng-model="permission"/>
-					<label ng-if="!editable || !manager" >{{permission}}</label>	
+					<label>{{employee.permissionName}}</label>	
 					<br>					
 					
-					<button id="btnUpdate" name="Update" ng-if="editable">Update</button>
+					<button id="btnUpdate" name="Update" ng-if="editable" ng-click="attmeptEdit()">Update</button>
 					<br ng-if="editable">
 				</div>		
 			</form>
 		</section>
-		<section  ng-controller="reimbursementsCtrl" ng-if="formTemplate == 'viewReimbursements'">
+		<section ng-if="formTemplate == 'viewReimbursements'">		
 			<label for="Statuses">Filter By Status: </label>
-			<select name="Statuses" ng-model="statusIDs" ng-options="x.status for x in statuses">
+			<select name="Statuses" ng-model="statusIDs" ng-options="s.status for s in statuses">
 			</select>
-			{{statusIDs.id}}
 			<table class="table table-bordered table-striped">
 				<tr>
 					<th ng-repeat="head in headers"> {{head.name}}</th>
@@ -79,28 +76,24 @@
 			<br>
 		</section>
 		
-		<section  ng-controller="reimburseCtrl" ng-if="formTemplate == 'newReimbursement'">	
+		<section ng-if="formTemplate == 'newReimbursement'">
+		{{reimbursement}}	
 			<label for="Amount">Amount: </label>
-			<input id="amount" name="Amount" type="text" ng-model="amount"/>
+			<input id="amount" name="Amount" type="text" ng-model="reimbursement.amount"/>
 			<br>
 			
 			<label for="Reason">For: </label>
-			<input id="reason" name="Reason" type="text" ng-model="reason"/>
+			<input id="reason" name="Reason" type="text" ng-model="reimbursement.reason"/>
 			<br>
 			
 			<label for="ExpenseDate">Date of Expense: </label>
-			<input id="expenseDate" name="ExpenseDate" type="text" ng-model="expenseDate"/>
+			<input id="expenseDate" name="ExpenseDate" type="text" ng-model="reimbursement.expenseDate"/>
 			<br>
-			
-			{{amount}}
-			{{reason}}
-			{{expenseDate}}
 			<br>
-			<button id="btnSubmit" name="Submit">Submit</button>
+			<button id="btnSubmit" name="Submit" ng-click="attmeptSubmit()">Submit</button>
 		</section>
 		
-		<footer>		
-			<button id="btnLogout" name="Logout">Logout</button>
+		<footer>			
 		</footer>
 		<script type="text/javascript" src="../js/employee.js"></script>
 	</body>

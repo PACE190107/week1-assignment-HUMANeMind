@@ -1,12 +1,17 @@
 package com.revature.services;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revature.dao.EmployeeDaoImplementation;
 import com.revature.exceptions.CredentialsNotValid;
+import com.revature.exceptions.EmployeeNotCreatedException;
 import com.revature.exceptions.EmployeeNotFoundException;
 import com.revature.models.Employee;
 
@@ -25,111 +30,141 @@ public class EmployeeServiceImplementation implements EmployeeService {
 		return employeeServiceImpl;
 	}
 
+	@SuppressWarnings("null")
 	@Override
 	public Object process(HttpServletRequest request, HttpServletResponse response) {
 		String method = request.getMethod();
-		String[] path = request.getRequestURI().split("/");
-		String lastURL = path[path.length - 1];
-		String nextToLastURL = path[path.length - 2];
+		String path = request.getRequestURI();
+		ObjectMapper mapper = new ObjectMapper();
+		String json = "";
+		BufferedReader br;
+		Employee fromWeb = null;
+		Employee managerWeb = null;
+		boolean success = false;
+
+		try {
+			br = new BufferedReader(new InputStreamReader(request.getInputStream()));
+			if (br != null) {
+				json = br.readLine();
+			}
+			fromWeb = mapper.readValue(json, Employee.class);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		};
 
 		switch (method) {
-			case "GET": {
-				// GET ALL LOGIC
-				if ("employee".equals(lastURL)) { // execute if the request is /PaceServletExamples/rest/todos
+		case "GET": {
+			if (managerWeb.getPermissionId() == 2) {
+				if (path.contains("employeesAll")) {
 					List<Employee> allEmployees = findAllEmployees();
 					return allEmployees;
 				}
-	
-				// GET ONE LOGIC
-				if ("employee".equals(nextToLastURL)) {
-					try {
-						Employee employeeId = new Employee();
-						employeeId.setId(Integer.valueOf(lastURL));
-	
-						employeeId = findEmployee(employeeId, "ID");
-	
-						return employeeId;
-					} catch (NumberFormatException e) {
-						return "Cannot convert " + lastURL + " into a number";
-					} catch (EmployeeNotFoundException e) {
-						return e.getMessage();
+			}			
+		}
+
+		case "POST": {
+			if (path.contains("employeeLogin")) {
+				try {
+					success = validateLogin(fromWeb.getUserName(), fromWeb.getPassword());
+
+					if (success) {
+						fromWeb = findEmployee(fromWeb, "Name");
+						return fromWeb;
+					} else {
+						throw new CredentialsNotValid();
 					}
-				}
-	
-								
-				
-				if ("employee3".equals(nextToLastURL)) {
-					try {
-						boolean success = false;
-						Employee editEmployee = new Employee(0, lastURL, "1234", "t", "u", "s.u@g.com", 2, "Employee", false);
-	
-						success = registerEmployee(editEmployee);
-	
-						if (success) {
-							editEmployee = findEmployee(editEmployee, "Name");
-							return editEmployee;
-						} else {
-							throw new CredentialsNotValid();
-						}
-					} catch (CredentialsNotValid e) {
-						return e.getMessage();
-					}catch (EmployeeNotFoundException e) {
-						return e.getMessage();
-					}
+				} catch (CredentialsNotValid e) {
+					return e.getMessage();
+				} catch (EmployeeNotFoundException e) {
+					return e.getMessage();
 				}
 			}
-			case "POST": {
-				if ("login".equals(lastURL)) {
-					try {
-						System.out.println(request.getParameter("cmd"));
-						boolean success = false;
-						Employee loginEmployee = new Employee();
-						loginEmployee.setUserName("E2");
-						loginEmployee.setPassword("1234");
-	
-						success = validateLogin(loginEmployee.getUserName(), loginEmployee.getPassword());
-	
-						if (success) {
-							loginEmployee = findEmployee(loginEmployee, "Name");
-							return loginEmployee;
-						} else {
-							throw new CredentialsNotValid();
-						}
-					} catch (CredentialsNotValid e) {
-						return e.getMessage();
-					}catch (EmployeeNotFoundException e) {
-						return e.getMessage();
+
+			if (path.contains("employeeNew")) {
+				try {
+					success = registerEmployee(fromWeb);
+
+					if (success) {
+						fromWeb = findEmployee(fromWeb, "Name");
+						return fromWeb;
+					} else {
+						throw new EmployeeNotCreatedException(fromWeb.getUserName());
 					}
+				} catch (EmployeeNotCreatedException e) {
+					return e.getMessage();
+				} catch (EmployeeNotFoundException e) {
+					return e.getMessage();
 				}
-				if ("newLogin".equals(lastURL)) {
-					try {
-						boolean success = false;
-						Employee newEmployee = new Employee(0, lastURL, "1234", "t", "u", "s.u@g.com", 2, "Employee", false);
-	
-						success = registerEmployee(newEmployee);
-	
-						if (success) {
-							newEmployee = findEmployee(newEmployee, "Name");
-							return newEmployee;
-						} else {
-							throw new CredentialsNotValid();
+			}
+
+			if (path.contains("employeeFind")) {
+				try {
+					fromWeb = findEmployee(fromWeb, "ID");
+					return fromWeb;
+				} catch (NumberFormatException e) {
+					return "Cannot convert " + fromWeb.getEmployeeID() + " into a number";
+				} catch (EmployeeNotFoundException e) {
+					return e.getMessage();
+				}
+			}
+		}
+
+		case "PUT": {
+			if (path.contains("employeeUpdate")) {
+				try {
+					Employee previousInfo = findEmployee(fromWeb, "ID");
+
+					if (previousInfo.getPassword() != fromWeb.getPassword()) {
+						success = modifyEmployee(fromWeb, "PASSWORD");
+						if (!success) {
+							return "Password Update Failed";
 						}
-					} catch (CredentialsNotValid e) {
-						return e.getMessage();
-					}catch (EmployeeNotFoundException e) {
-						return e.getMessage();
 					}
-				}				
+
+					if (previousInfo.getEmail() != fromWeb.getEmail()) {
+						success = modifyEmployee(fromWeb, "EMAIL");
+						if (!success) {
+							return "Email Update Failed";
+						}
+					}
+
+					if (previousInfo.getFirstName() != fromWeb.getFirstName()) {
+						success = modifyEmployee(fromWeb, "FIRST_NAME");
+						if (!success) {
+							return "First Name Update Failed";
+						}
+					}
+
+					if (previousInfo.getEmail() != fromWeb.getEmail()) {
+						success = modifyEmployee(fromWeb, "LAST_NAME");
+						if (!success) {
+							return "Last Name Update Failed";
+						}
+					}
+
+					if (previousInfo.getPermissionId() != fromWeb.getPermissionId()) {
+						success = modifyEmployee(fromWeb, "PERMISSION_LEVEL");
+						if (!success) {
+							return "Last Name Update Failed";
+						}
+					}
+
+					if (success) {
+						return "Success!";
+					} else {
+						throw new CredentialsNotValid();
+					}
+				} catch (EmployeeNotFoundException e) {
+					return e.getMessage();
+				}
 			}
-	
-			case "PUT": {
-				break;
-			}
-	
-			case "DELETE": {
-				//TODO
-				break;
-			}
+			break;
+		}
+
+		case "DELETE": {
+			// TODO
+			break;
+		}
 		}
 
 		return null;

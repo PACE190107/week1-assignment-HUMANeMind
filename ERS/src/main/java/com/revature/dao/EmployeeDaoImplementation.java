@@ -60,6 +60,7 @@ public class EmployeeDaoImplementation implements EmployeeDao {
 			}
 
 		} catch (SQLException e) {
+			e.printStackTrace();
 			System.out.println("The Username entered already exists.");
 			return false;
 		}
@@ -96,7 +97,7 @@ public class EmployeeDaoImplementation implements EmployeeDao {
 				break;
 			}			
 			
-			ps.setInt(2, updatedEmployee.getId());
+			ps.setInt(2, updatedEmployee.getEmployeeID());
 
 			if (ps.executeUpdate() > 0) {
 				System.out.println("User successfully Modified.");
@@ -116,7 +117,7 @@ public class EmployeeDaoImplementation implements EmployeeDao {
 			String sql = "{CALL DELETE_EMPLOYEE(?)}";
 			CallableStatement cs = conn.prepareCall(sql);
 			
-			cs.setInt(1, deletedEmployee.getId());
+			cs.setInt(1, deletedEmployee.getEmployeeID());
 			
 			if (cs.executeUpdate() > 0) {
 				System.out.println("Employee successfully Deleted.");
@@ -136,7 +137,7 @@ public class EmployeeDaoImplementation implements EmployeeDao {
 		try (Connection conn = JDBCConnectionUtil.getConnection()) {
 			// Create Query to return All Employees
 			Statement stmt = conn.createStatement();
-			String sql = "SELECT * FROM EMPLOYEE_WITH_PERMISSION_VW";
+			String sql = "SELECT * FROM EMPLOYEE_WITH_PERMISSION_VW ORDER BY EMPLOYEE_ID DESC";
 
 			ResultSet rs = stmt.executeQuery(sql);
 
@@ -177,7 +178,7 @@ public class EmployeeDaoImplementation implements EmployeeDao {
 			} else {
 				String sql = "SELECT * FROM EMPLOYEE_WITH_PERMISSION_VW WHERE EMPLOYEE_ID = ?";
 				ps = conn.prepareStatement(sql);
-				ps.setInt(1, employeeToFind.getId());
+				ps.setInt(1, employeeToFind.getEmployeeID());
 			}
 
 			ResultSet rs = ps.executeQuery();
@@ -235,7 +236,7 @@ public class EmployeeDaoImplementation implements EmployeeDao {
 			// Query to find a specific User
 			String sql = "SELECT PERMISSION_NAME FROM EMPLOYEE_WITH_PERMISSION_VW WHERE EMPLOYEE_ID = ?";
 			PreparedStatement ps = conn.prepareStatement(sql);
-			ps.setInt(1, employeeToPermit.getId());
+			ps.setInt(1, employeeToPermit.getEmployeeID());
 
 			ResultSet rs = ps.executeQuery();
 

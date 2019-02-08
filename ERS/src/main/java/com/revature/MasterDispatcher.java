@@ -18,10 +18,8 @@ public class MasterDispatcher {
 	public static Object process(HttpServletRequest request, HttpServletResponse response) {
 		if (request.getRequestURI().contains("employee")) {
 			return employeeService.process(request, response);}
-		else if (request.getRequestURI().contains("manager")) {
+		else if (request.getRequestURI().contains("reimbursement")) {
 			return reimbursementService.process(request, response);}
-		else if (request.getRequestURI().contains("login")) {
-			return employeeService.process(request, response);}
 		else 
 			return "Not yet implemented";
 	}

@@ -35,13 +35,13 @@ public class ReimbursementDaoImplementation implements ReimbursementDao {
 		}
 		return reimbursementDao;
 	}
-	
+
 	@Override
 	public Object process(HttpServletRequest request, HttpServletResponse response) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
 	public boolean insertReimbursement(Reimbursement insertedReimbursement) {
 		try (Connection conn = JDBCConnectionUtil.getConnection()) {
@@ -50,10 +50,10 @@ public class ReimbursementDaoImplementation implements ReimbursementDao {
 
 			if (insertedReimbursement.getId() > 0) {
 				cs.setInt(1, insertedReimbursement.getId());
-			}else {
+			} else {
 				cs.setString(1, null);
 			}
-			
+
 			cs.setInt(2, insertedReimbursement.getStatus());
 			cs.setString(3, insertedReimbursement.getReciept());
 			cs.setInt(4, insertedReimbursement.getUpdaterID());
@@ -62,7 +62,7 @@ public class ReimbursementDaoImplementation implements ReimbursementDao {
 			cs.setTimestamp(7, Timestamp.valueOf(insertedReimbursement.getSubmittedOn()));
 			cs.setString(8, insertedReimbursement.getExpense());
 			cs.setDate(9, Date.valueOf(insertedReimbursement.getExpenseDate()));
-			
+
 			if (cs.executeUpdate() > 0) {
 				System.out.println("Reimbursement Created successfully.");
 				return true;
@@ -79,22 +79,20 @@ public class ReimbursementDaoImplementation implements ReimbursementDao {
 	@Override
 	public boolean updateReimbursement(Reimbursement updatedReimbursement) {
 		try (Connection conn = JDBCConnectionUtil.getConnection()) {
-			String sql = "UPDATE REIMBURSEMENT " + 
-					"SET STATUS = ?, " + 					 
-					"UPDATED_BY = ? " +
-					"WHERE REIMBURSEMENT_ID = ?";
+			String sql = "UPDATE REIMBURSEMENT " + "SET STATUS = ?, " + "UPDATED_BY = ? "
+					+ "WHERE REIMBURSEMENT_ID = ?";
 			PreparedStatement ps = conn.prepareStatement(sql);
 
-			ps.setInt(1, updatedReimbursement.getStatus());			
+			ps.setInt(1, updatedReimbursement.getStatus());
 			ps.setInt(2, updatedReimbursement.getUpdaterID());
 			ps.setInt(3, updatedReimbursement.getId());
-			
+
 			if (ps.executeUpdate() > 0) {
 				System.out.println("Reimbursement successfully altered.");
 				return true;
 			}
 
-		} catch (SQLException e) {			
+		} catch (SQLException e) {
 			log.error("Unable to update Reimbursement due to a system error. Please contact a system administrator.");
 		}
 
@@ -107,127 +105,105 @@ public class ReimbursementDaoImplementation implements ReimbursementDao {
 			// Create Query to return All Reimbursements
 			String sql = "SELECT * FROM REIMBURSEMENT_FULL_VW WHERE STATUS_ID = ?";
 			PreparedStatement ps = conn.prepareStatement(sql);
-			
-			ps.setInt(1, status);	
+
+			ps.setInt(1, status);
 			ResultSet rs = ps.executeQuery();
 
 			List<Reimbursement> allReimbursements = new ArrayList<Reimbursement>();
-			
+
 			// Return all rows in the results
-			while (rs.next()) {				
-				allReimbursements.add(
-						new Reimbursement(rs.getInt(1),
-								rs.getInt(2),
-								rs.getString(3),
-								rs.getString(4),
-								rs.getInt(5),
-								rs.getString(6),
-								rs.getInt(7),
-								rs.getString(8),
-								rs.getDouble(9),
-								rs.getTimestamp(10).toLocalDateTime(),
-								rs.getString(11),
-								rs.getDate(12).toLocalDate()
-								));
+			while (rs.next()) {
+				allReimbursements.add(new Reimbursement(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getString(4),
+						rs.getInt(5), rs.getString(6), rs.getInt(7), rs.getString(8), rs.getDouble(9),
+						rs.getTimestamp(10).toLocalDateTime(), rs.getString(11), rs.getDate(12).toLocalDate()));
 			}
 
 			return allReimbursements;
 
 		} catch (SQLException e) {
-			log.error("Unable to return all Reimbursements due to a system error. Please contact a system administrator.");
+			log.error(
+					"Unable to return all Reimbursements due to a system error. Please contact a system administrator.");
 		}
 
 		return null;
 	}
-	
+
 	@Override
-	public List<Reimbursement> getAllReimbursementsForEmployee(Employee currentEmployee, int status) {
+	public List<Reimbursement> getAllReimbursementsForEmployee(Employee currentEmployee) {
 		List<Reimbursement> allReimbursements = new ArrayList<Reimbursement>();
-		
+
 		try (Connection conn = JDBCConnectionUtil.getConnection()) {
 			// Create Query to return All Reimbursements for this employee
-			String sql = "SELECT * FROM REIMBURSEMENT_FULL_VW WHERE SUBMITTED_BY = ? AND STATUS_ID = ?";
-			PreparedStatement ps = conn.prepareStatement(sql);			
-			ps.setInt(1, currentEmployee.getId());
-			ps.setInt(2, status);
-			
+			String sql = "SELECT * FROM REIMBURSEMENT_FULL_VW WHERE SUBMITTED_BY = ?";
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setInt(1, currentEmployee.getEmployeeID());
+
 			ResultSet rs = ps.executeQuery();
-			
+
 			// Return all rows in the results
-			while (rs.next()) {				
-				allReimbursements.add(
-						new Reimbursement(rs.getInt(1),
-								rs.getInt(2),
-								rs.getString(3),
-								rs.getString(4),
-								rs.getInt(5),
-								rs.getString(6),
-								rs.getInt(7),
-								rs.getString(8),
-								rs.getDouble(9),
-								rs.getTimestamp(10).toLocalDateTime(),
-								rs.getString(11),
-								rs.getDate(12).toLocalDate()
-								));
+			while (rs.next()) {
+				allReimbursements.add(new Reimbursement(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getString(4),
+						rs.getInt(5), rs.getString(6), rs.getInt(7), rs.getString(8), rs.getDouble(9),
+						rs.getTimestamp(10).toLocalDateTime(), rs.getString(11), rs.getDate(12).toLocalDate()));
 			}
 
 			return allReimbursements;
 
 		} catch (SQLException e) {
-			System.out.println("Unable to return all Reimbursements for " + currentEmployee.getUserName() + " due to a system error. Please contact a system administrator.");
+			System.out.println("Unable to return all Reimbursements for " + currentEmployee.getUserName()
+					+ " due to a system error. Please contact a system administrator.");
 		}
 
 		return null;
-	}	
+	}
 
 	@Override
-	public Reimbursement getReimbursement(Reimbursement reimbursementToFind) {
+	public Reimbursement getReimbursement(Reimbursement reimbursementToFind, String by) {
+		PreparedStatement ps;
 		try (Connection conn = JDBCConnectionUtil.getConnection()) {
-			// Query to find a specific Employee
-			String sql = "SELECT * FROM REIMBURSEMENT_FULL_VW WHERE REIMBURSEMENT_ID = ?";
-			PreparedStatement ps = conn.prepareStatement(sql);
-			ps.setInt(1, reimbursementToFind.getId());
+			// Query to find a specific reimbursement
+			if (by == "Submitter") {
+				String sql = "SELECT * FROM REIMBURSEMENT_FULL_VW WHERE SUBMITTED_BY = ? ORDER_BY SUBMITTED_ON DESC LIMIT 1";
+				ps = conn.prepareStatement(sql);
+				ps.setInt(1, reimbursementToFind.getSubmitterID());
+			} else {
+				String sql = "SELECT * FROM REIMBURSEMENT_FULL_VW WHERE REIMBURSEMENT_ID = ?";
+				ps = conn.prepareStatement(sql);
+				ps.setInt(1, reimbursementToFind.getId());
+			}
 			
 			ResultSet rs = ps.executeQuery();
 			if (rs.getFetchSize() > 0) {
 				// Store the results
 				while (rs.next()) {
-					reimbursementToFind = new Reimbursement(rs.getInt(1),
-							rs.getInt(2),
-							rs.getString(3),
-							rs.getString(4),
-							rs.getInt(5),
-							rs.getString(6),
-							rs.getInt(7),
-							rs.getString(8),
-							rs.getDouble(9),
-							rs.getTimestamp(10).toLocalDateTime(),
-							rs.getString(11),
-							rs.getDate(12).toLocalDate()
-							);
+					reimbursementToFind = new Reimbursement(rs.getInt(1), rs.getInt(2), rs.getString(3),
+							rs.getString(4), rs.getInt(5), rs.getString(6), rs.getInt(7), rs.getString(8),
+							rs.getDouble(9), rs.getTimestamp(10).toLocalDateTime(), rs.getString(11),
+							rs.getDate(12).toLocalDate());
 				}
 				return reimbursementToFind;
 			}
 
 		} catch (SQLException e) {
 			e.printStackTrace();
-			log.error("Unable to return this Reimbursement due to a system error. Please contact a system administrator.");
+			log.error(
+					"Unable to return this Reimbursement due to a system error. Please contact a system administrator.");
 		}
 
 		return null;
 	}
-	
+
 	@Override
 	public List<String> getReimbursementStatus() {
 		List<String> status = new ArrayList<String>();
-		
+
 		try (Connection conn = JDBCConnectionUtil.getConnection()) {
 			// Create Query to return All Reimbursement Status
 			Statement stmt = conn.createStatement();
 			String sql = "SELECT * FROM STATUS ORDER BY STATUS_ID";
 
 			ResultSet rs = stmt.executeQuery(sql);
-			
+
 			// Return all rows in the results
 			while (rs.next()) {
 				status.add(rs.getInt(1) + ";" + rs.getString(2));
@@ -236,7 +212,8 @@ public class ReimbursementDaoImplementation implements ReimbursementDao {
 			return status;
 
 		} catch (SQLException e) {
-			log.error("Unable to return all Reimbursement Status due to a system error. Please contact a system administrator.");
+			log.error(
+					"Unable to return all Reimbursement Status due to a system error. Please contact a system administrator.");
 		}
 
 		return null;
@@ -245,30 +222,26 @@ public class ReimbursementDaoImplementation implements ReimbursementDao {
 	@Override
 	public List<ReimbursementHistory> getReimbursementHistory(Reimbursement currentReimbursement) {
 		List<ReimbursementHistory> history = new ArrayList<ReimbursementHistory>();
-		
+
 		try (Connection conn = JDBCConnectionUtil.getConnection()) {
-			// Create Query to return All Reimbursement Status			
+			// Create Query to return All Reimbursement Status
 			String sql = "SELECT * FROM REIMBURSEMENT_LOG WHERE REIMBURSEMENT_ID = ? ORDER BY EVENT_TIME DESC";
-			PreparedStatement ps = conn.prepareStatement(sql);			
+			PreparedStatement ps = conn.prepareStatement(sql);
 			ps.setInt(1, currentReimbursement.getId());
-			
-			ResultSet rs = ps.executeQuery();			
-			
+
+			ResultSet rs = ps.executeQuery();
+
 			// Return all rows in the results
 			while (rs.next()) {
-				
-				history.add(
-						new ReimbursementHistory(rs.getInt(1),
-								rs.getInt(2), 
-								rs.getInt(3),
-								rs.getInt(4),
-								rs.getInt(5),
-								rs.getTimestamp(6).toLocalDateTime()));
+
+				history.add(new ReimbursementHistory(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4),
+						rs.getInt(5), rs.getTimestamp(6).toLocalDateTime()));
 			}
 			return history;
 
 		} catch (SQLException e) {
-			log.error("Unable to return all Reimbursement History due to a system error. Please contact a system administrator.");
+			log.error(
+					"Unable to return all Reimbursement History due to a system error. Please contact a system administrator.");
 		}
 
 		return null;
@@ -278,9 +251,9 @@ public class ReimbursementDaoImplementation implements ReimbursementDao {
 		try (Connection conn = JDBCConnectionUtil.getConnection()) {
 			String sql = "{CALL DELETE_REIMBURSEMENT(?)}";
 			CallableStatement cs = conn.prepareCall(sql);
-			
+
 			cs.setInt(1, currentReimbursement.getId());
-			
+
 			if (cs.executeUpdate() > 0) {
 				System.out.println("Reimbursement successfully Deleted.");
 				return true;
@@ -291,5 +264,5 @@ public class ReimbursementDaoImplementation implements ReimbursementDao {
 		}
 
 		return false;
-	}	
+	}
 }
